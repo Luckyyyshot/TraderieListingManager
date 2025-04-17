@@ -13,6 +13,7 @@ A plugin primarily made to learn how to make firefox plugins, but also to automa
 
 - Subscribe to a listing that saves data about it so it's able to relist them.
 - Unsubscribe all functionality that will drop all the subscribed listings.
+- Relist functionality (for some runes in D2R) that relists all the subscribed listings.
 
 ## Structure
 

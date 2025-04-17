@@ -1,9 +1,11 @@
 import { loadListings, savelistings } from './storageHandler.js';
 import { getValueFromDOM, getListingPrices, getListingIdFromUrl, getListingItemFromTitle } from './dOMQueryHandler.js';
+import { executeDelete, executeCreate } from './requestHandler.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     const subscribeButton = document.querySelector('#subscribe-button');
     const unsubscribeAllButton = document.querySelector('#unsubscribe-all-button');
+    const relistButton = document.querySelector('#relist-button');
     
     let listings = await loadListings();
 
@@ -50,6 +52,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     relistButton.addEventListener('click', async () => {
-        await relistSubscribedListings();
-    });
+        relistButton.disabled = true;
+        relistButton.textContent = 'Relisting...';
+        try {
+            let currentListings = [...listings];
+            console.log('Executing delete requests.');
+            for (const listing of currentListings) {
+                await executeDelete(listing.listingId);
+                listings.splice(listings.indexOf(listing), 1); 
+            }
+            await savelistings(listings);
 
+            console.log('Executing create requests.');
+            for (const listing of currentListings) {
+                setTimeout(() => {}, 100);
+                try {
+                    let result = await executeCreate(listing.item, listing.amount, listing.stockListing, listing.buyingItems, listing.amounts);
+                    if (!result.success) { throw new Error(result.error); }
+                    else { 
+                        listing.listingId = result.data.listing;
+                        listings.push(listing);
+                        await savelistings(listings);
+                    }
+                } catch (error) {
+                    console.error('Unexpected error:', error);
+                }
+            }
+
+            relistButton.textContent = 'Success!';
+        } catch (error) {
+            relistButton.textContent = 'Error. Try Again';
+            console.error('Unexpected error:', error);
+        } finally {
+            setTimeout(() => {
+                relistButton.disabled = false;
+                relistButton.textContent = 'Relist';
+            }, 1000);
+        }
+    });
+});
