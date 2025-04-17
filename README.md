@@ -9,6 +9,11 @@ A plugin primarily made to learn how to make firefox plugins, but also to automa
 3. Click "Load Temporary Add-on"
 4. Navigate to the extension directory and select the `manifest.json` file
 
+## Features
+
+- Subscribe to a listing that saves data about it so it's able to relist them.
+- Unsubscribe all functionality that will drop all the subscribed listings.
+
 ## Structure
 
 - `manifest.json` - Extension configuration
